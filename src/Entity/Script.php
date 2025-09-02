@@ -25,6 +25,8 @@ class Script
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank]
+    #[Assert\NoSuspiciousCharacters]
+    // TODO: validate markup is complete?
     private ?string $content = null;
 
     public function __toString(): string
