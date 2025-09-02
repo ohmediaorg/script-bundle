@@ -41,11 +41,14 @@ class ScriptController extends AbstractController
             ->getQuery()
             ->getResult();
 
+        if (!$this->getUser()->isTypeDeveloper()) {
+            $this->addFlash('info', 'Scripts are managed by the development team to ensure security and site stability. You can view active scripts and their placements, but only developers can create or edit them.');
+        }
+
         return $this->render('@OHMediaScript/script_index.html.twig', [
             'scripts' => $scripts,
             'new_script' => $newScript,
             'attributes' => $this->getAttributes(),
-            'active_script' => $this->scriptRepository->getActive(),
         ]);
     }
 
@@ -77,8 +80,6 @@ class ScriptController extends AbstractController
 
             $this->addFlash('error', 'There are some errors in the form below.');
         }
-
-        $this->setActiveScriptFlash($script);
 
         return $this->render('@OHMediaScript/script_create.html.twig', [
             'form' => $form->createView(),
@@ -115,45 +116,10 @@ class ScriptController extends AbstractController
             $this->addFlash('error', 'There are some errors in the form below.');
         }
 
-        $this->setActiveScriptFlash($script);
-
         return $this->render('@OHMediaScript/script_edit.html.twig', [
             'form' => $form->createView(),
             'script' => $script,
         ]);
-    }
-
-    private function setActiveScriptFlash(Script $script)
-    {
-        $activeScript = $this->scriptRepository->getActive();
-
-        $message = null;
-
-        if ($activeScript === $script) {
-            $this->addFlash('info', 'This is the current active script.');
-        } elseif ($activeScript) {
-            $timezone = new \DateTimeZone($this->timezone->get());
-            $startsAt = $activeScript->getStartsAt()->setTimezone($timezone);
-
-            if ($activeScript->getEndsAt()) {
-                $endsAt = $activeScript->getEndsAt()->setTimezone($timezone);
-
-                $message = sprintf(
-                    'The current active script started on %s and will expire on %s.',
-                    $startsAt->format('M j, Y @ g:ia'),
-                    $endsAt->format('M j, Y @ g:ia'),
-                );
-            } else {
-                $message = sprintf(
-                    'The current active script started on %s and is not set to expire.',
-                    $startsAt->format('M j, Y @ g:ia'),
-                );
-            }
-        }
-
-        if ($message) {
-            $this->addFlash('info', $message);
-        }
     }
 
     #[Route('/script/{id}/delete', name: 'script_delete', methods: ['GET', 'POST'])]
@@ -183,12 +149,6 @@ class ScriptController extends AbstractController
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
-        }
-
-        $activeScript = $this->scriptRepository->getActive();
-
-        if ($script === $activeScript) {
-            $this->addFlash('warning', 'This is the current active script.');
         }
 
         return $this->render('@OHMediaScript/script_delete.html.twig', [

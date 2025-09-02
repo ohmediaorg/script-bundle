@@ -36,9 +36,6 @@
         <thead>
           <tr>
             <th>Name</th>
-            <th>Status</th>
-            <th>Starts</th>
-            <th>Ends</th>
             <th>Last Updated</th>
             <th></th>
           </tr>
@@ -47,23 +44,6 @@
           {% for script in scripts %}
           <tr>
             <td>{{ script }}</td>
-            <td>
-              {% if active_script == script %}
-                {{ bootstrap_badge_primary('Active') }}
-              {% endif %}
-
-              {% if script.isDraft %}
-                {{ bootstrap_badge_secondary('Draft') }}
-              {% elseif script.isScheduled %}
-                {{ bootstrap_badge_warning('Scheduled') }}
-              {% elseif script.isPublished %}
-                {{ bootstrap_badge_success('Published') }}
-              {% elseif script.isExpired %}
-                {{ bootstrap_badge_danger('Expired') }}
-              {% endif %}
-            </td>
-            <td>{{ script.startsAt ? script.startsAt|datetime : '' }}</td>
-            <td>{{ script.endsAt ? script.endsAt|datetime : '' }}</td>
             <td>{{ script.updatedAt|datetime }}</td>
             <td>
               {% if is_granted(attributes.edit, script) %}
@@ -82,11 +62,6 @@
           </tr>
           {% endfor %}
         </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="100%">The {{ bootstrap_badge_primary('Active') }} script is a {{ bootstrap_badge_success('Published') }} script with the most-recent start date.</td>
-          </tr>
-        </tfoot>
       </table>
     {% else %}
       <p>
