@@ -5,6 +5,7 @@ namespace OHMedia\ScriptBundle\Security\Voter;
 use OHMedia\ScriptBundle\Entity\Script;
 use OHMedia\SecurityBundle\Entity\User;
 use OHMedia\SecurityBundle\Security\Voter\AbstractEntityVoter;
+use OHMedia\WysiwygBundle\Service\Wysiwyg;
 
 class ScriptVoter extends AbstractEntityVoter
 {
@@ -12,6 +13,10 @@ class ScriptVoter extends AbstractEntityVoter
     public const CREATE = 'create';
     public const EDIT = 'edit';
     public const DELETE = 'delete';
+
+    public function __construct(private Wysiwyg $wysiwyg)
+    {
+    }
 
     protected function getAttributes(): array
     {
@@ -35,16 +40,22 @@ class ScriptVoter extends AbstractEntityVoter
 
     protected function canCreate(Script $script, User $loggedIn): bool
     {
-        return true;
+        return $loggedIn->isTypeDeveloper();
     }
 
     protected function canEdit(Script $script, User $loggedIn): bool
     {
-        return true;
+        return $loggedIn->isTypeDeveloper();
     }
 
     protected function canDelete(Script $script, User $loggedIn): bool
     {
-        return true;
+        if (!$loggedIn->isTypeDeveloper()) {
+            return false;
+        }
+
+        $shortcode = sprintf('script(%d)', $script->getId());
+
+        return !$this->wysiwyg->shortcodesInUse($shortcode);
     }
 }

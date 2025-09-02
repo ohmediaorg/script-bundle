@@ -3,11 +3,10 @@
 namespace OHMedia\ScriptBundle\Twig;
 
 use OHMedia\ScriptBundle\Repository\ScriptRepository;
-use Twig\Environment;
-use Twig\Extension\AbstractExtension;
+use OHMedia\WysiwygBundle\Twig\AbstractWysiwygExtension;
 use Twig\TwigFunction;
 
-class ScriptBarExtension extends AbstractExtension
+class WysiwygExtension extends AbstractWysiwygExtension
 {
     public function __construct(private ScriptRepository $scriptRepository)
     {
@@ -16,27 +15,20 @@ class ScriptBarExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('script_bar', [$this, 'scriptBar'], [
+            new TwigFunction('script', [$this, 'script'], [
                 'is_safe' => ['html'],
-                'needs_environment' => true,
             ]),
         ];
     }
 
-    public function scriptBar(Environment $twig): string
+    public function script(?int $id = null): string
     {
-        $script = $this->scriptRepository->getActive();
+        $script = $id ? $this->scriptRepository->find($id) : null;
 
         if (!$script) {
             return '';
         }
 
-        if ($script->isDismissible() && isset($_COOKIE[$script->getCookieName()])) {
-            return '';
-        }
-
-        return $twig->render('@OHMediaScript/script_bar.html.twig', [
-            'script' => $script,
-        ]);
+        return $script->getContent();
     }
 }

@@ -36,8 +36,8 @@ class ScriptController extends AbstractController
             'You cannot access the list of scripts.'
         );
 
-        $scripts = $this->scriptRepository->createQueryBuilder('a')
-            ->orderBy('a.starts_at', 'desc')
+        $scripts = $this->scriptRepository->createQueryBuilder('s')
+            ->orderBy('s.name', 'asc')
             ->getQuery()
             ->getResult();
 
