@@ -7,7 +7,6 @@ use OHMedia\ScriptBundle\Entity\Script;
 use OHMedia\ScriptBundle\Form\ScriptType;
 use OHMedia\ScriptBundle\Repository\ScriptRepository;
 use OHMedia\ScriptBundle\Security\Voter\ScriptVoter;
-use OHMedia\TimezoneBundle\Service\Timezone;
 use OHMedia\UtilityBundle\Form\DeleteType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,7 +20,6 @@ class ScriptController extends AbstractController
 {
     public function __construct(
         private ScriptRepository $scriptRepository,
-        private Timezone $timezone,
     ) {
     }
 
