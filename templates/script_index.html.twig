@@ -1,0 +1,101 @@
+{% extends '@OHMediaBackend/base.html.twig' %}
+
+{% block meta_title %}Scripts{% endblock %}
+
+{% block breadcrumbs %}
+{{ bootstrap_breadcrumbs(
+  bootstrap_breadcrumb(bootstrap_icon('exclamation-triangle-fill') ~ ' Scripts', 'script_index'),
+) }}
+{% endblock %}
+
+{% set can_create_script = is_granted(attributes.create, new_script) %}
+
+{% set create_script_href = path('script_create') %}
+
+{% block actions %}
+{% if can_create_script %}
+<a href="{{ create_script_href }}" class="btn btn-sm btn-primary">
+  {{ bootstrap_icon('plus') }} Add Script</a>
+{% endif %}
+{% endblock %}
+
+{% block main %}
+{% set script_count = scripts|length %}
+
+<div class="card">
+  <div class="card-body">
+    <div class="card-title card-title-with-count">
+      <h1 class="card-title-heading">Scripts</h1>
+      <div class="card-title-count">
+        {{ bootstrap_badge_primary(script_count) }}
+      </div>
+    </div>
+
+    {% if script_count %}
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Starts</th>
+            <th>Ends</th>
+            <th>Last Updated</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for script in scripts %}
+          <tr>
+            <td>{{ script }}</td>
+            <td>
+              {% if active_script == script %}
+                {{ bootstrap_badge_primary('Active') }}
+              {% endif %}
+
+              {% if script.isDraft %}
+                {{ bootstrap_badge_secondary('Draft') }}
+              {% elseif script.isScheduled %}
+                {{ bootstrap_badge_warning('Scheduled') }}
+              {% elseif script.isPublished %}
+                {{ bootstrap_badge_success('Published') }}
+              {% elseif script.isExpired %}
+                {{ bootstrap_badge_danger('Expired') }}
+              {% endif %}
+            </td>
+            <td>{{ script.startsAt ? script.startsAt|datetime : '' }}</td>
+            <td>{{ script.endsAt ? script.endsAt|datetime : '' }}</td>
+            <td>{{ script.updatedAt|datetime }}</td>
+            <td>
+              {% if is_granted(attributes.edit, script) %}
+              <a class="btn btn-sm btn-primary btn-action" href="{{ path('script_edit', {id: script.id}) }}" title="Edit">
+                {{ bootstrap_icon('pen-fill') }}
+                <span class="visually-hidden">Edit</span>
+              </a>
+              {% endif %}
+              {% if is_granted(attributes.delete, script) %}
+              <a class="btn btn-sm btn-danger btn-action" href="{{ path('script_delete', {id: script.id}) }}" title="Delete" data-confirm="Are you sure you want to delete this script? Clicking OK will take you to a verification step to delete this entry.">
+                {{ bootstrap_icon('trash-fill') }}
+                <span class="visually-hidden">Delete</span>
+              </a>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="100%">The {{ bootstrap_badge_primary('Active') }} script is a {{ bootstrap_badge_success('Published') }} script with the most-recent start date.</td>
+          </tr>
+        </tfoot>
+      </table>
+    {% else %}
+      <p>
+        No scripts found.
+        {% if can_create_script %}
+        <a href="{{ create_script_href }}">Click here to add an script.</a>
+        {% endif %}
+      </p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
