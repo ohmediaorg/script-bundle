@@ -36,6 +36,7 @@
         <thead>
           <tr>
             <th>Name</th>
+            <th>Shortcode</th>
             <th>Last Updated</th>
             <th></th>
           </tr>
@@ -44,6 +45,7 @@
           {% for script in scripts %}
           <tr>
             <td>{{ script }}</td>
+            <td>{{ shortcode('script(' ~ script.id ~ ')') }}</td>
             <td>{{ script.updatedAt|datetime }}</td>
             <td>
               {% if is_granted(attributes.edit, script) %}
