@@ -14,7 +14,7 @@ class ScriptNavItemProvider extends AbstractNavItemProvider
     {
         if ($this->isGranted(ScriptVoter::INDEX, new Script())) {
             return (new NavLink('Scripts', 'script_index'))
-                ->setIcon('exclamation-triangle-fill');
+                ->setIcon('code-slash');
         }
 
         return null;
