@@ -11,8 +11,6 @@ use OHMedia\UtilityBundle\Form\DeleteType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\FormError;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -70,8 +68,6 @@ class ScriptController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
-            $this->validateHtml($form, $script);
-
             if ($form->isValid()) {
                 $this->scriptRepository->save($script, true);
 
@@ -107,8 +103,6 @@ class ScriptController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
-            $this->validateHtml($form, $script);
-
             if ($form->isValid()) {
                 $this->scriptRepository->save($script, true);
 
@@ -124,26 +118,6 @@ class ScriptController extends AbstractController
             'form' => $form->createView(),
             'script' => $script,
         ]);
-    }
-
-    private function validateHtml(FormInterface $form, Script $script): void
-    {
-        $html = <<<HTML
-<!DOCTYPE html>
-<html>
-  <body>
-      {$script->getContent()}
-  </body>
-</html>
-HTML;
-
-        $domDocument = new \DOMDocument();
-
-        try {
-            $domDocument->loadHtml($html);
-        } catch (\Exception $e) {
-            $form->get('content')->addError(new FormError($e->getMessage()));
-        }
     }
 
     #[Route('/script/{id}/delete', name: 'script_delete', methods: ['GET', 'POST'])]
