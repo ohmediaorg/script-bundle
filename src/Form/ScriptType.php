@@ -21,6 +21,9 @@ class ScriptType extends AbstractType
 
         $builder->add('content', TextareaType::class, [
             'help' => 'This content will be output as is.',
+            'attr' => [
+                'rows' => 10,
+            ],
         ]);
     }
 
