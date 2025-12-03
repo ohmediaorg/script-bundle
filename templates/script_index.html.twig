@@ -45,25 +45,7 @@
           </thead>
           <tbody>
             {% for script in scripts %}
-            <tr>
-              <td>{{ script }}</td>
-              <td>{{ shortcode('script(' ~ script.id ~ ')') }}</td>
-              <td>{{ script.updatedAt|datetime }}</td>
-              <td>
-                {% if is_granted(attributes.edit, script) %}
-                <a class="btn btn-sm btn-primary btn-action" href="{{ path('script_edit', {id: script.id}) }}" title="Edit">
-                  {{ bootstrap_icon('pencil') }}
-                  <span class="visually-hidden">Edit</span>
-                </a>
-                {% endif %}
-                {% if is_granted(attributes.delete, script) %}
-                <a class="btn btn-sm btn-danger btn-action" href="{{ path('script_delete', {id: script.id}) }}" title="Delete" data-confirm="Are you sure you want to delete this script? Clicking OK will take you to a verification step to delete this entry.">
-                  {{ bootstrap_icon('trash') }}
-                  <span class="visually-hidden">Delete</span>
-                </a>
-                {% endif %}
-              </td>
-            </tr>
+              {{ _self.table_row(script, attributes) }}
             {% endfor %}
           </tbody>
         </table>
@@ -78,3 +60,39 @@
     </div>
   </div>
 {% endblock %}
+
+{% macro table_row(script, attributes) %}
+  {% set row_actions = [] %}
+
+  {% if is_granted(attributes.edit, script) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'script_edit',
+      route_params: {id: script.id},
+      color: 'secondary',
+      icon: 'pen',
+      text: 'Edit Script',
+    }]) %}
+  {% endif %}
+
+  {% if is_granted(attributes.delete, script) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'script_delete',
+      route_params: {id: script.id},
+      color: 'danger',
+      icon: 'trash',
+      text: 'Delete Script',
+      confirm: 'Are you sure you want to delete this script? Clicking OK will take you to a verification step to delete this entry.',
+    }]) %}
+  {% endif %}
+
+  <tr>
+    <td>{{ script }}</td>
+    <td>{{ shortcode('script(' ~ script.id ~ ')') }}</td>
+    <td>{{ script.updatedAt|datetime }}</td>
+    <td>
+      {% include '@OHMediaBackend/widget/row_actions.html.twig' with {
+        row_actions: row_actions,
+      } only %}
+    </td>
+  </tr>
+{% endmacro %}
