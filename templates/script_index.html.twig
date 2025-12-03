@@ -3,9 +3,9 @@
 {% block meta_title %}Scripts{% endblock %}
 
 {% block breadcrumbs %}
-{{ bootstrap_breadcrumbs(
-  bootstrap_breadcrumb(bootstrap_icon('code-slash') ~ ' Scripts', 'script_index'),
-) }}
+  {{ bootstrap_breadcrumbs(
+    bootstrap_breadcrumb(bootstrap_icon('code-slash') ~ ' Scripts', 'script_index'),
+  ) }}
 {% endblock %}
 
 {% set can_create_script = is_granted(attributes.create, new_script) %}
@@ -13,66 +13,68 @@
 {% set create_script_href = path('script_create') %}
 
 {% block actions %}
-{% if can_create_script %}
-<a href="{{ create_script_href }}" class="btn btn-sm btn-primary">
-  {{ bootstrap_icon('plus-lg') }} Add Script</a>
-{% endif %}
+  {% if can_create_script %}
+    <a href="{{ create_script_href }}" class="btn btn-primary">
+      {{ bootstrap_icon('plus-lg') }}
+      Add Script
+    </a>
+  {% endif %}
 {% endblock %}
 
 {% block main %}
-{% set script_count = scripts|length %}
+  {% set script_count = scripts|length %}
 
-<div class="card">
-  <div class="card-body">
-    <div class="card-title card-title-with-count">
-      <h1 class="card-title-heading">Scripts</h1>
-      <div class="card-title-count">
-        {{ bootstrap_badge_primary(script_count) }}
+  <div class="card">
+    <div class="card-body">
+      <div class="card-title card-title-with-count">
+        <h1 class="card-title-heading">Scripts</h1>
+        <div class="card-title-count">
+          {{ bootstrap_badge_primary(script_count) }}
+        </div>
       </div>
-    </div>
 
-    {% if script_count %}
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Shortcode</th>
-            <th>Last Updated</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for script in scripts %}
-          <tr>
-            <td>{{ script }}</td>
-            <td>{{ shortcode('script(' ~ script.id ~ ')') }}</td>
-            <td>{{ script.updatedAt|datetime }}</td>
-            <td>
-              {% if is_granted(attributes.edit, script) %}
-              <a class="btn btn-sm btn-primary btn-action" href="{{ path('script_edit', {id: script.id}) }}" title="Edit">
-                {{ bootstrap_icon('pencil') }}
-                <span class="visually-hidden">Edit</span>
-              </a>
-              {% endif %}
-              {% if is_granted(attributes.delete, script) %}
-              <a class="btn btn-sm btn-danger btn-action" href="{{ path('script_delete', {id: script.id}) }}" title="Delete" data-confirm="Are you sure you want to delete this script? Clicking OK will take you to a verification step to delete this entry.">
-                {{ bootstrap_icon('trash') }}
-                <span class="visually-hidden">Delete</span>
-              </a>
-              {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% else %}
-      <p>
-        No scripts found.
-        {% if can_create_script %}
-        <a href="{{ create_script_href }}">Click here to add an script.</a>
-        {% endif %}
-      </p>
-    {% endif %}
+      {% if script_count %}
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Shortcode</th>
+              <th>Last Updated</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for script in scripts %}
+            <tr>
+              <td>{{ script }}</td>
+              <td>{{ shortcode('script(' ~ script.id ~ ')') }}</td>
+              <td>{{ script.updatedAt|datetime }}</td>
+              <td>
+                {% if is_granted(attributes.edit, script) %}
+                <a class="btn btn-sm btn-primary btn-action" href="{{ path('script_edit', {id: script.id}) }}" title="Edit">
+                  {{ bootstrap_icon('pencil') }}
+                  <span class="visually-hidden">Edit</span>
+                </a>
+                {% endif %}
+                {% if is_granted(attributes.delete, script) %}
+                <a class="btn btn-sm btn-danger btn-action" href="{{ path('script_delete', {id: script.id}) }}" title="Delete" data-confirm="Are you sure you want to delete this script? Clicking OK will take you to a verification step to delete this entry.">
+                  {{ bootstrap_icon('trash') }}
+                  <span class="visually-hidden">Delete</span>
+                </a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>
+          No scripts found.
+          {% if can_create_script %}
+            <a href="{{ create_script_href }}">Click here to add an script.</a>
+          {% endif %}
+        </p>
+      {% endif %}
+    </div>
   </div>
-</div>
 {% endblock %}
