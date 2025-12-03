@@ -2,6 +2,7 @@
 
 namespace OHMedia\ScriptBundle\Controller;
 
+use OHMedia\BackendBundle\Form\MultiSaveType;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\ScriptBundle\Entity\Script;
 use OHMedia\ScriptBundle\Form\ScriptType;
@@ -11,6 +12,7 @@ use OHMedia\UtilityBundle\Form\DeleteType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -63,7 +65,7 @@ class ScriptController extends AbstractController
 
         $form = $this->createForm(ScriptType::class, $script);
 
-        $form->add('save', SubmitType::class);
+        $form->add('save', MultiSaveType::class);
 
         $form->handleRequest($request);
 
@@ -73,7 +75,7 @@ class ScriptController extends AbstractController
 
                 $this->addFlash('notice', 'The script was created successfully.');
 
-                return $this->redirectToRoute('script_index');
+                return $this->redirectForm($script, $form);
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -98,7 +100,7 @@ class ScriptController extends AbstractController
 
         $form = $this->createForm(ScriptType::class, $script);
 
-        $form->add('save', SubmitType::class);
+        $form->add('save', MultiSaveType::class);
 
         $form->handleRequest($request);
 
@@ -108,7 +110,7 @@ class ScriptController extends AbstractController
 
                 $this->addFlash('notice', 'The script was updated successfully.');
 
-                return $this->redirectToRoute('script_index');
+                return $this->redirectForm($script, $form);
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -118,6 +120,21 @@ class ScriptController extends AbstractController
             'form' => $form->createView(),
             'script' => $script,
         ]);
+    }
+
+    private function redirectForm(Script $script, FormInterface $form): Response
+    {
+        $clickedButtonName = $form->getClickedButton()->getName() ?? null;
+
+        if ('keep_editing' === $clickedButtonName) {
+            return $this->redirectToRoute('script_edit', [
+                'id' => $script->getId(),
+            ]);
+        } elseif ('add_another' === $clickedButtonName) {
+            return $this->redirectToRoute('script_create');
+        } else {
+            return $this->redirectToRoute('script_index');
+        }
     }
 
     #[Route('/script/{id}/delete', name: 'script_delete', methods: ['GET', 'POST'])]
