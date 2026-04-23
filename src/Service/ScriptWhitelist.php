@@ -31,18 +31,76 @@ class ScriptWhitelist
             // return true;
         }
 
+        $content = $script->getContent();
+
+        if ($this->isWhitelistedIframeTag($content)) {
+            return true;
+        }
+
+        if ($this->isWhitelistedScriptTag($content)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function isWhitelistedIframeTag(string $content): bool
+    {
+        $isIframeTag = preg_match(
+            '/^<iframe([^>]*)>\s*<\/iframe>$/',
+            $content,
+            $iframeTagMatches,
+        );
+
+        if (!$isIframeTag) {
+            return false;
+        }
+
+        $attributes = $iframeTagMatches[1];
+
+        preg_match_all('/ src="([^"]*)"/', $attributes, $srcMatches);
+
+        if (1 !== count($srcMatches[0])) {
+            // only valid with a single src attribute
+            return false;
+        }
+
+        $src = $srcMatches[1][0];
+
         foreach ($this->iframeSrcPrefixes as $iframeSrcPrefix) {
-            $prefix = preg_quote($iframeSrcPrefix, '/');
-            $regex = '/^<iframe[^src]*src="'.$prefix.'[^"]*"[^>]*>\s*<\/iframe>$/';
-            if (preg_match($regex, $script->getContent())) {
+            if (str_starts_with($src, $iframeSrcPrefix)) {
                 return true;
             }
         }
 
+        return false;
+    }
+
+    private function isWhitelistedScriptTag(string $content): bool
+    {
+        $isScriptTag = preg_match(
+            '/^<script([^>]*)>\s*<\/script>$/',
+            $content,
+            $scriptTagMatches,
+        );
+
+        if (!$isScriptTag) {
+            return false;
+        }
+
+        $attributes = $scriptTagMatches[1];
+
+        preg_match_all('/ src="([^"]*)"/', $attributes, $srcMatches);
+
+        if (1 !== count($srcMatches[0])) {
+            // only valid with a single src attribute
+            return false;
+        }
+
+        $src = $srcMatches[1][0];
+
         foreach ($this->scriptSrcPrefixes as $scriptSrcPrefix) {
-            $prefix = preg_quote($scriptSrcPrefix, '/');
-            $regex = '/^<script[^src]*src="'.$prefix.'[^"]*"[^>]*>\s*<\/script>$/';
-            if (preg_match($regex, $script->getContent())) {
+            if (str_starts_with($src, $scriptSrcPrefix)) {
                 return true;
             }
         }
