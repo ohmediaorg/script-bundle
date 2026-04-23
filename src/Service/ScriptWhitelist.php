@@ -27,7 +27,7 @@ class ScriptWhitelist
         }
 
         if ($user->isTypeDeveloper()) {
-            // return true;
+            return true;
         }
 
         if ($this->isWhitelistedIframeTag($content)) {
