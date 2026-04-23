@@ -33,6 +33,10 @@
         </div>
       </div>
 
+      {% if app.user and not app.user.isTypeDeveloper %}
+        {{ script_whitelist() }}
+      {% endif %}
+
       {% if script_count %}
         <table class="table table-striped">
           <thead>
