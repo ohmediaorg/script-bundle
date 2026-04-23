@@ -3,6 +3,7 @@
 namespace OHMedia\ScriptBundle\Security\Voter;
 
 use OHMedia\ScriptBundle\Entity\Script;
+use OHMedia\ScriptBundle\Service\ScriptWhitelist;
 use OHMedia\SecurityBundle\Entity\User;
 use OHMedia\SecurityBundle\Security\Voter\AbstractEntityVoter;
 use OHMedia\WysiwygBundle\Service\Wysiwyg;
@@ -14,8 +15,10 @@ class ScriptVoter extends AbstractEntityVoter
     public const EDIT = 'edit';
     public const DELETE = 'delete';
 
-    public function __construct(private Wysiwyg $wysiwyg)
-    {
+    public function __construct(
+        private ScriptWhitelist $scriptWhitelist,
+        private Wysiwyg $wysiwyg,
+    ) {
     }
 
     protected function getAttributes(): array
@@ -40,17 +43,17 @@ class ScriptVoter extends AbstractEntityVoter
 
     protected function canCreate(Script $script, User $loggedIn): bool
     {
-        return $loggedIn->isTypeDeveloper();
+        return true;
     }
 
     protected function canEdit(Script $script, User $loggedIn): bool
     {
-        return $loggedIn->isTypeDeveloper();
+        return $this->scriptWhitelist->isScriptWhitelisted($script);
     }
 
     protected function canDelete(Script $script, User $loggedIn): bool
     {
-        if (!$loggedIn->isTypeDeveloper()) {
+        if (!$this->scriptWhitelist->isScriptWhitelisted($script)) {
             return false;
         }
 
