@@ -43,7 +43,11 @@ class ScriptVoter extends AbstractEntityVoter
 
     protected function canCreate(Script $script, User $loggedIn): bool
     {
-        return true;
+        if ($loggedIn->isTypeDeveloper()) {
+            return true;
+        }
+
+        return $this->scriptWhitelist->getIframeSrcPrefixes() || $this->scriptWhitelist->getScriptSrcPrefixes();
     }
 
     protected function canEdit(Script $script, User $loggedIn): bool
