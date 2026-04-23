@@ -29,7 +29,7 @@ class ScriptWhitelistValidator extends ConstraintValidator
         }
 
         if (!$this->scriptWhitelist->isWhitelisted($value)) {
-            $this->context->buildViolation('The script content did not meet the whitelist requirements.')
+            $this->context->buildViolation('The script content did not meet the whitelist requirements. Please ensure you copied it correctly.')
                 ->setParameter('{{ string }}', $value)
                 ->addViolation();
         }
