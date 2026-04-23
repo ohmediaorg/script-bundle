@@ -2,6 +2,7 @@
 
 namespace OHMedia\ScriptBundle;
 
+use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
@@ -12,8 +13,12 @@ class OHMediaScriptBundle extends AbstractBundle
     {
         $definition->rootNode()
             ->children()
-                ->arrayNode('iframe_src_prefixes')->end()
-                ->arrayNode('script_src_prefixes')->end()
+                ->arrayNode('iframe_src_prefixes')
+                    ->scalarPrototype()->end()
+                ->end()
+                ->arrayNode('script_src_prefixes')
+                    ->scalarPrototype()->end()
+                ->end()
             ->end()
         ;
     }
