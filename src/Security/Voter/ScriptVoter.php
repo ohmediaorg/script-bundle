@@ -48,12 +48,12 @@ class ScriptVoter extends AbstractEntityVoter
 
     protected function canEdit(Script $script, User $loggedIn): bool
     {
-        return $this->scriptWhitelist->isScriptWhitelisted($script);
+        return $this->scriptWhitelist->isWhitelisted($script->getContent());
     }
 
     protected function canDelete(Script $script, User $loggedIn): bool
     {
-        if (!$this->scriptWhitelist->isScriptWhitelisted($script)) {
+        if (!$this->scriptWhitelist->isWhitelisted($script->getContent())) {
             return false;
         }
 

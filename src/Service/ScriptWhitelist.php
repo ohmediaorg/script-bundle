@@ -2,7 +2,6 @@
 
 namespace OHMedia\ScriptBundle\Service;
 
-use OHMedia\ScriptBundle\Entity\Script;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -17,7 +16,7 @@ class ScriptWhitelist
     ) {
     }
 
-    public function isScriptWhitelisted(Script $script): bool
+    public function isWhitelisted(string $content): bool
     {
         $token = $this->tokenStorage->getToken();
 
@@ -30,8 +29,6 @@ class ScriptWhitelist
         if ($user->isTypeDeveloper()) {
             // return true;
         }
-
-        $content = $script->getContent();
 
         if ($this->isWhitelistedIframeTag($content)) {
             return true;
