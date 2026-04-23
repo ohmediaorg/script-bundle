@@ -8,6 +8,7 @@ use OHMedia\ScriptBundle\Entity\Script;
 use OHMedia\ScriptBundle\Form\ScriptType;
 use OHMedia\ScriptBundle\Repository\ScriptRepository;
 use OHMedia\ScriptBundle\Security\Voter\ScriptVoter;
+use OHMedia\ScriptBundle\Service\ScriptWhitelist;
 use OHMedia\UtilityBundle\Form\DeleteType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,7 +27,7 @@ class ScriptController extends AbstractController
     }
 
     #[Route('/scripts', name: 'script_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(ScriptWhitelist $scriptWhitelist): Response
     {
         $newScript = new Script();
 
@@ -41,14 +42,12 @@ class ScriptController extends AbstractController
             ->getQuery()
             ->getResult();
 
-        if (!$this->getUser()->isTypeDeveloper()) {
-            $this->addFlash('info', 'Scripts are managed by the development team to ensure security and site stability. You can view active scripts and their placements, but only developers can create or edit them.');
-        }
-
         return $this->render('@OHMediaScript/script_index.html.twig', [
             'scripts' => $scripts,
             'new_script' => $newScript,
             'attributes' => $this->getAttributes(),
+            'iframe_src_prefixes' => $scriptWhitelist->getIframeSrcPrefixes(),
+            'script_src_prefixes' => $scriptWhitelist->getScriptSrcPrefixes(),
         ]);
     }
 
@@ -132,9 +131,9 @@ class ScriptController extends AbstractController
             ]);
         } elseif ('add_another' === $clickedButtonName) {
             return $this->redirectToRoute('script_create');
-        } else {
-            return $this->redirectToRoute('script_index');
         }
+
+        return $this->redirectToRoute('script_index');
     }
 
     #[Route('/script/{id}/delete', name: 'script_delete', methods: ['GET', 'POST'])]
