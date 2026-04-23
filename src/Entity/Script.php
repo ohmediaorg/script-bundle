@@ -5,6 +5,7 @@ namespace OHMedia\ScriptBundle\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\ScriptBundle\Repository\ScriptRepository;
+use OHMedia\ScriptBundle\Validator\ScriptWhitelist;
 use OHMedia\UtilityBundle\Entity\BlameableEntityTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -26,6 +27,7 @@ class Script
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank]
     #[Assert\NoSuspiciousCharacters]
+    #[ScriptWhitelist]
     // TODO: validate markup is complete?
     private ?string $content = null;
 
