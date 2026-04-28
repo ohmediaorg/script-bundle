@@ -53,12 +53,8 @@
   {% if not app.user.isTypeDeveloper %}
     <div class="alert alert-info">
       {% if has_whitelist %}
-        {% if app.user.isTypeDeveloper %}
-          <p>As a developer user, you can edit any script freely. In doing so, you could cause it to no longer meet the following requirements:</p>
-        {% else %}
-          <p>Scripts are managed by the development team to ensure security and site stability. You can view active scripts and their placements.</p>
-          <p>You may also maintain scripts whose content resembles one of the following:</p>
-        {% endif %}
+        <p>Scripts are managed by the development team to ensure security and site stability. You can view active scripts and their placements.</p>
+        <p>You may also maintain scripts whose content resembles one of the following:</p>
 
         {{ _self.whitelist(iframe_src_prefixes, script_src_prefixes) }}
       {% else %}
