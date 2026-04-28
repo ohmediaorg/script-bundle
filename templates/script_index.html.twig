@@ -61,7 +61,7 @@
         {% endif %}
 
         {{ _self.whitelist(iframe_src_prefixes, script_src_prefixes) }}
-      {% elseif not app.user.isTypeDeveloper %}
+      {% else %}
         <p class="mb-0">Scripts are managed by the development team to ensure security and site stability. You can view active scripts and their placements, but only developers can create or edit them.</p>
       {% endif %}
     </div>
