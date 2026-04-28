@@ -21,28 +21,47 @@
   {% endif %}
 {% endblock %}
 
+{% macro whitelist(iframe_src_prefixes, script_src_prefixes) %}
+  <ul class="mb-0">
+    {% for iframe_src_prefix in iframe_src_prefixes %}
+      <li>
+        <code>{{ '<iframe src="' ~ iframe_src_prefix ~ '..."></iframe>' }}</code>
+      </li>
+    {% endfor %}
+
+    {% for script_src_prefix in script_src_prefixes %}
+      <li>
+        <code>{{ '<script src="' ~ script_src_prefix ~ '..."></script>' }}</code>
+      </li>
+    {% endfor %}
+  </ul>
+{% endmacro %}
+
 {% block main %}
   {% set script_count = scripts|length %}
 
+  {% set has_whitelist = iframe_src_prefixes or script_src_prefixes %}
+
+  {% if has_whitelist and app.user.isTypeDeveloper %}
+    <div class="alert alert-warning">
+      <p>As a developer user, you can bypass the whitelist in effect, but you could cause a script to no longer meet the whitelist requirements:</p>
+
+      {{ _self.whitelist(iframe_src_prefixes, script_src_prefixes) }}
+    </div>
+  {% endif %}
+
   {% if not app.user.isTypeDeveloper %}
     <div class="alert alert-info">
-      {% if iframe_src_prefixes or script_src_prefixes %}
-        <p>Scripts are managed by the development team to ensure security and site stability. You can view active scripts and their placements.</p>
-        <p>You may also maintain scripts whose content resembles one of the following:</p>
-        <ul class="mb-0">
-          {% for iframe_src_prefix in iframe_src_prefixes %}
-            <li>
-              <code>{{ '<iframe src="' ~ iframe_src_prefix ~ '..."></iframe>' }}</code>
-            </li>
-          {% endfor %}
+      {% if has_whitelist %}
+        {% if app.user.isTypeDeveloper %}
+          <p>As a developer user, you can edit any script freely. In doing so, you could cause it to no longer meet the following requirements:</p>
+        {% else %}
+          <p>Scripts are managed by the development team to ensure security and site stability. You can view active scripts and their placements.</p>
+          <p>You may also maintain scripts whose content resembles one of the following:</p>
+        {% endif %}
 
-          {% for script_src_prefix in script_src_prefixes %}
-            <li>
-              <code>{{ '<script src="' ~ script_src_prefix ~ '..."></script>' }}</code>
-            </li>
-          {% endfor %}
-        </ul>
-      {% else %}
+        {{ _self.whitelist(iframe_src_prefixes, script_src_prefixes) }}
+      {% elseif not app.user.isTypeDeveloper %}
         <p class="mb-0">Scripts are managed by the development team to ensure security and site stability. You can view active scripts and their placements, but only developers can create or edit them.</p>
       {% endif %}
     </div>
