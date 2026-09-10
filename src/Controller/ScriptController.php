@@ -38,7 +38,7 @@ class ScriptController extends AbstractController
         );
 
         $scripts = $this->scriptRepository->createQueryBuilder('s')
-            ->orderBy('s.name', 'asc')
+            ->orderBy('s.name', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
 
